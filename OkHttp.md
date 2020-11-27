@@ -42,54 +42,56 @@ AsyncCall中有一个方法 executeOn(service:ExecutorService) 很明显，线�
  中是重中之重。分析一下这个方法吧：
 
 
-   @Throws(IOException::class)
-     internal fun getResponseWithInterceptorChain(): Response {
-       // 111111111111111111111111111111
-       val interceptors = mutableListOf<Interceptor>()
-       interceptors += client.interceptors       //           (1)
-       interceptors += RetryAndFollowUpInterceptor(client)
-       interceptors += BridgeInterceptor(client.cookieJar)
-       interceptors += CacheInterceptor(client.cache)
-       interceptors += ConnectInterceptor
-       if (!forWebSocket) {
-         interceptors += client.networkInterceptors
-       }
-       interceptors += CallServerInterceptor(forWebSocket)
-       // 111111111111111111111111111111
+       @Throws(IOException::class)
+         internal fun getResponseWithInterceptorChain(): Response {
+           // 111111111111111111111111111111
+           val interceptors = mutableListOf<Interceptor>()
+           interceptors += client.interceptors       //           (1)
+           interceptors += RetryAndFollowUpInterceptor(client)
+           interceptors += BridgeInterceptor(client.cookieJar)
+           interceptors += CacheInterceptor(client.cache)
+           interceptors += ConnectInterceptor
+           if (!forWebSocket) {
+             interceptors += client.networkInterceptors
+           }
+           interceptors += CallServerInterceptor(forWebSocket)
+           // 111111111111111111111111111111
 
-       val chain = RealInterceptorChain(
-           call = this,
-           interceptors = interceptors,
-           index = 0,
-           exchange = null,
-           request = originalRequest,
-           connectTimeoutMillis = client.connectTimeoutMillis,
-           readTimeoutMillis = client.readTimeoutMillis,
-           writeTimeoutMillis = client.writeTimeoutMillis
-       )
+           val chain = RealInterceptorChain(
+               call = this,
+               interceptors = interceptors,
+               index = 0,
+               exchange = null,
+               request = originalRequest,
+               connectTimeoutMillis = client.connectTimeoutMillis,
+               readTimeoutMillis = client.readTimeoutMillis,
+               writeTimeoutMillis = client.writeTimeoutMillis
+           )
 
-       // 222222222222222222222222222222222222
-       var calledNoMoreExchanges = false
-       try {
-         val response = chain.proceed(originalRequest)
-         if (isCanceled()) {
-           response.closeQuietly()
-           throw IOException("Canceled")
+           // 222222222222222222222222222222222222
+           var calledNoMoreExchanges = false
+           try {
+             val response = chain.proceed(originalRequest)
+             if (isCanceled()) {
+               response.closeQuietly()
+               throw IOException("Canceled")
+             }
+             return response
+           } catch (e: IOException) {
+             calledNoMoreExchanges = true
+             throw noMoreExchanges(e) as Throwable
+           } finally {
+             if (!calledNoMoreExchanges) {
+               noMoreExchanges(null)
+             }
+           }
+
+            // 222222222222222222222222222222222222
          }
-         return response
-       } catch (e: IOException) {
-         calledNoMoreExchanges = true
-         throw noMoreExchanges(e) as Throwable
-       } finally {
-         if (!calledNoMoreExchanges) {
-           noMoreExchanges(null)
-         }
-       }
-
-        // 222222222222222222222222222222222222
-     }
 
 
  上面代码1处就是添加把各种拦截器添加上去包括开发者添加的一些拦截器都加进去了,2 处是真正实现链式调用的 ，把我们的原始请求
+
  添加到责任链中去执行，每个拦截器完成不一样的工作，最后把从服务器中拿到的响应返回给我们，责任链模式完好清晰的完成该完成的工作，
+
  分工明确，达到了单一职责
