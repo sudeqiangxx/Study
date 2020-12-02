@@ -3,6 +3,7 @@ package com.zzw.hiltdemo
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
@@ -26,6 +27,17 @@ class MainActivity : AppCompatActivity() {
             words.let { adapter?.notifyDataSetChanged() }
         })
         initView()
+        test()
+    }
+
+    private fun test() {
+        insert(1)
+        insert(2)
+        insert(4)
+        insert(5)
+        insert(6)
+        getMedian()
+        Log.i("----------->", "--------->${getMedian()}")
     }
 
     private fun initView() {

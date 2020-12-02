@@ -5,19 +5,19 @@ apply plugin: 'kotlin-kapt'
 apply plugin: 'dagger.hilt.android.plugin'
 //apply plugin: 'danny.asm.lifecycle'
 
-apply plugin: 'danny.asm.lifecycle'
-buildscript {
-    repositories {
-        google()
-        jcenter()
-        //自定义插件maven地址
-        maven { url '../asm_lifecycle_repo' }
-    }
-    dependencies {
-        //加载自定义插件 group + module + version
-        classpath 'danny.lifecycle.plugin:asm_lifecycle_plugin:1.0.0'
-    }
-}
+//apply plugin: 'danny.asm.lifecycle'
+//buildscript {
+//    repositories {
+//        google()
+//        jcenter()
+//        //自定义插件maven地址
+//        maven { url '../asm_lifecycle_repo' }
+//    }
+//    dependencies {
+//        //加载自定义插件 group + module + version
+//        classpath 'danny.lifecycle.plugin:asm_lifecycle_plugin:1.0.0'
+//    }
+//}
 android {
     compileSdkVersion 29
     buildToolsVersion "29.0.3"
