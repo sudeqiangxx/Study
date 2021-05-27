@@ -39,11 +39,11 @@
         app:layout_constraintStart_toEndOf="@+id/image_iv"
         app:layout_constraintTop_toTopOf="@+id/image_iv"
         app:layout_constraintEnd_toStartOf="@+id/chat_tv"
-        tools:text="我是昵称昵称我是昵称"
-        app:layout_constraintHorizontal_bias="0"
+        tools:text="测试测试测测试测试测测试测"
         android:singleLine="true"
         android:ellipsize="end"
         android:maxLines="1"
+        app:layout_constraintHorizontal_bias="0"
         app:layout_constrainedWidth="true"
         app:layout_constraintHorizontal_chainStyle="packed"
         android:textColor="@android:color/white"/>
